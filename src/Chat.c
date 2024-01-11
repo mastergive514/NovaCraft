@@ -915,7 +915,7 @@ static void SphereCommand_Execute(const cc_string* args, int argsCount) {
 
 static struct ChatCommand SphereCommand = {
     "Sphere", SphereCommand_Execute,
-    COMMAND_FLAG_SINGLEPLAYER_ONLY | COMMAND_FLAG_UNSPLIT_ARGS,
+    COMMAND_FLAG_SINGLEPLAYER_ONLY,
     {
         "&a/client sphere [centerX] [centerY] [centerZ] [radius] [block] [persist]",
         "&eFills the sphere with [block] centered at the specified coordinates.",
