@@ -814,25 +814,11 @@ static struct ChatCommand ClearDeniedCommand = {
 	}
 };
 
-static void PlaceCommand_Execute(const cc_string* args, int argsCount) {
-        Game_ChangeBlock(args[1], args[2], args[3], args[4]);
-	
-}
 
-static struct ChatCommand PlaceCommand = {
-        "Place", PlaceCommand_Execute,
-        0,
-        {
-               "&a/client place [x] [y] [z] [block id]",
-               "&ePlace Block",
-
-        }
-};
 /*########################################################################################################################*
 *---------------------------------------------------------SphereCommand---------------------------------------------------*
 *#########################################################################################################################*/
 static int sphere_block = -1;
-static IVec3 sphere_center;
 static int sphere_radius;
 static cc_bool sphere_persist, sphere_hooked;
 
@@ -845,31 +831,18 @@ static void SphereCommand_DoSphere(void) {
 
     if (sphere_block == -1) toPlace = Inventory_SelectedBlock;
 
-    for (y = sphere_center.Y - sphere_radius; y <= sphere_center.Y + sphere_radius; y++) {
-        for (z = sphere_center.Z - sphere_radius; z <= sphere_center.Z + sphere_radius; z++) {
-            for (x = sphere_center.X - sphere_radius; x <= sphere_center.X + sphere_radius; x++) {
-                if ((x - sphere_center.X) * (x - sphere_center.X) +
-                    (y - sphere_center.Y) * (y - sphere_center.Y) +
-                    (z - sphere_center.Z) * (z - sphere_center.Z) <= sphere_radius * sphere_radius) {
+    Vec3 curPos = Game_LocalPlayer.Position;
+
+    for (y = (int)(curPos.Y) - sphere_radius; y <= (int)(curPos.Y) + sphere_radius; y++) {
+        for (z = (int)(curPos.Z) - sphere_radius; z <= (int)(curPos.Z) + sphere_radius; z++) {
+            for (x = (int)(curPos.X) - sphere_radius; x <= (int)(curPos.X) + sphere_radius; x++) {
+                if ((x - curPos.X) * (x - curPos.X) +
+                    (y - curPos.Y) * (y - curPos.Y) +
+                    (z - curPos.Z) * (z - curPos.Z) <= sphere_radius * sphere_radius) {
                     Game_ChangeBlock(x, y, z, toPlace);
                 }
             }
         }
-    }
-}
-
-static void SphereCommand_BlockChanged(void* obj, IVec3 coords, BlockID old, BlockID now) {
-    cc_string msg; char msgBuffer[STRING_SIZE];
-    String_InitArray(msg, msgBuffer);
-
-    SphereCommand_DoSphere();
-
-    if (!sphere_persist) {
-        Event_Unregister_(&UserEvents.BlockChanged, NULL, SphereCommand_BlockChanged);
-        sphere_hooked = false;
-        Chat_AddOf(&String_Empty, MSG_TYPE_CLIENTSTATUS_1);
-    } else {
-        Chat_AddOf(&sphere_msg, MSG_TYPE_CLIENTSTATUS_1);
     }
 }
 
@@ -904,40 +877,37 @@ static cc_bool SphereCommand_ParseArgs(const cc_string* args) {
 
 static void SphereCommand_Execute(const cc_string* args, int argsCount) {
     if (sphere_hooked) {
-        Event_Unregister_(&UserEvents.BlockChanged, NULL, SphereCommand_BlockChanged);
+        Event_Unregister_(&UserEvents.BlockChanged, NULL, SphereCommand_DoSphere);
         sphere_hooked = false;
     }
 
     sphere_block = -1;
     sphere_persist = false;
-    if (argsCount < 4 || argsCount > 5 || !String_ParseIVec3(args, &sphere_center)) {
+
+    if (argsCount < 2 || argsCount > 3 || !Convert_ParseInt(args[1], &sphere_radius) || sphere_radius < 0) {
         Chat_AddOf(&String_Empty, MSG_TYPE_CLIENTSTATUS_1);
         return;
     }
 
-    if (!Convert_ParseInt(args[3], &sphere_radius) || sphere_radius < 0) {
-        Chat_Add1("&eSphere: &cInvalid radius \"%s\".", &args[3]);
-        return;
-    }
-
-    if (argsCount == 5 && !SphereCommand_ParseArgs(&args[4])) return;
+    if (argsCount == 3 && !SphereCommand_ParseArgs(&args[2])) return;
 
     Chat_AddOf(&sphere_msg, MSG_TYPE_CLIENTSTATUS_1);
-    Event_Register_(&UserEvents.BlockChanged, NULL, SphereCommand_BlockChanged);
+    Event_Register_(&UserEvents.BlockChanged, NULL, SphereCommand_DoSphere);
     sphere_hooked = true;
 }
 
 static struct ChatCommand SphereCommand = {
     "Sphere", SphereCommand_Execute,
-    COMMAND_FLAG_SINGLEPLAYER_ONLY,
+    COMMAND_FLAG_SINGLEPLAYER_ONLY | COMMAND_FLAG_UNSPLIT_ARGS,
     {
-        "&a/client sphere [centerX] [centerY] [centerZ] [radius] [block] [persist]",
-        "&eFills the sphere with [block] centered at the specified coordinates.",
+        "&a/client sphere [radius] [block] [persist]",
+        "&eFills the sphere with [block] centered around your current position.",
         "&eIf no block is given, uses your currently held block.",
         "&e  If persist is given and is \"yes\", then the command",
         "&e  will repeatedly fill spheres, without needing to be typed in again.",
     }
 };
+
 
 
 /*########################################################################################################################*
@@ -1042,7 +1012,7 @@ static void CuboidCommand_Execute(const cc_string* args, int argsCount) {
 
 static struct ChatCommand CuboidCommand = {
 	"Cuboid", CuboidCommand_Execute,
-	COMMAND_FLAG_SINGLEPLAYER_ONLY | COMMAND_FLAG_UNSPLIT_ARGS,
+	COMMAND_FLAG_SINGLEPLAYER_ONLY,
 	{
 		"&a/client cuboid [block] [persist]",
 		"&eFills the 3D rectangle between two points with [block].",
