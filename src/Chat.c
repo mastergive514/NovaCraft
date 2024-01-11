@@ -815,7 +815,7 @@ static struct ChatCommand ClearDeniedCommand = {
 };
 
 static void PlaceCommand_Execute(const cc_string* args, int argsCount) {
-        Game_ChangeBlock(args[1], args[2], args[3])
+        Game_ChangeBlock(args[1], args[2], args[3]);
 	
 }
 
