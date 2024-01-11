@@ -831,7 +831,7 @@ static void SphereCommand_DoSphere(void) {
 
     if (sphere_block == -1) toPlace = Inventory_SelectedBlock;
     
-    struct LocalPlayer* localPlayer = Game_GetLocalPlayer();
+     struct LocalPlayer* localPlayer = (struct LocalPlayer*)Entities.List[255];
     if (!localPlayer) return;
 
     Vec3 curPos;
