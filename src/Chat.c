@@ -814,6 +814,20 @@ static struct ChatCommand ClearDeniedCommand = {
 	}
 };
 
+static void PlaceCommand_Execute(const cc_string* args, int argsCount) {
+        Game_ChangeBlock(args[1], args[2], args[3])
+	
+}
+
+static struct ChatCommand PlaceCommand = {
+        "Place", PlaceCommand_Execute,
+        0,
+        {
+               "&a/client place [x] [y] [z] [block id]",
+               "&ePlace Block",
+
+        }
+};
 /*########################################################################################################################*
 *---------------------------------------------------------SphereCommand---------------------------------------------------*
 *#########################################################################################################################*/
@@ -1251,7 +1265,7 @@ static void OnInit(void) {
         Commands_Register(&ClearCommand);
         Commands_Register(&HomeCommand);
 	Commands_Register(&WeatherCommand);
-	Commands_Register(&SphereCommand);
+	Commands_Register(&PlaceCommand);
 	
 
 
