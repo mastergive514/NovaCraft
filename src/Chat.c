@@ -831,7 +831,10 @@ static void SphereCommand_DoSphere(void) {
 
     if (sphere_block == -1) toPlace = Inventory_SelectedBlock;
 
-    Vec3 curPos = Game_LocalPlayer.Position;
+    Vec3 curPos;
+    Vec3.X = localPlayer->Base.Position.X;
+    Vec3.Y = localPlayer->Base.Position.Y;
+    Vec3.Z = localPlayer->Base.Position.Z;
 
     for (y = (int)(curPos.Y) - sphere_radius; y <= (int)(curPos.Y) + sphere_radius; y++) {
         for (z = (int)(curPos.Z) - sphere_radius; z <= (int)(curPos.Z) + sphere_radius; z++) {
