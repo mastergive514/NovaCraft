@@ -830,7 +830,10 @@ static void SphereCommand_DoSphere(void) {
     BlockID toPlace = (BlockID)sphere_block;
 
     if (sphere_block == -1) toPlace = Inventory_SelectedBlock;
-    struct LocalPlayer* localPlayer = (struct LocalPlayer*)Entities.List[255];
+    
+    struct LocalPlayer* localPlayer = Game_GetLocalPlayer();
+    if (!localPlayer) return;
+
     Vec3 curPos;
     curPos.X = localPlayer->Base.Position.X;
     curPos.Y = localPlayer->Base.Position.Y;
@@ -848,8 +851,6 @@ static void SphereCommand_DoSphere(void) {
         }
     }
 }
-
-
 
 static cc_bool SphereCommand_ParseArgs(const cc_string* args) {
     cc_string value = *args;
@@ -889,13 +890,12 @@ static void SphereCommand_Execute(const cc_string* args, int argsCount) {
     sphere_block = -1;
     sphere_persist = false;
 
-    if (argsCount < 2 || argsCount > 3 || !Convert_ParseInt(&args[1], &sphere_radius) || sphere_radius < 0) {
+    if (argsCount < 2 || argsCount > 3 || !Convert_ParseInt(&args[2], &sphere_radius) || sphere_radius < 0) {
         Chat_AddOf(&String_Empty, MSG_TYPE_CLIENTSTATUS_1);
         return;
     }
 
-
-    if (argsCount == 3 && !SphereCommand_ParseArgs(&args[2])) return;
+    if (argsCount == 3 && !SphereCommand_ParseArgs(&args[3])) return;
 
     Chat_AddOf(&sphere_msg, MSG_TYPE_CLIENTSTATUS_1);
     Event_Register_(&UserEvents.BlockChanged, NULL, SphereCommand_DoSphere);
@@ -913,6 +913,7 @@ static struct ChatCommand SphereCommand = {
         "&e  will repeatedly fill spheres, without needing to be typed in again.",
     }
 };
+
 
 
 
