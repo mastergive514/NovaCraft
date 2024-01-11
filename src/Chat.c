@@ -830,7 +830,7 @@ static void SphereCommand_DoSphere(void) {
     BlockID toPlace = (BlockID)sphere_block;
 
     if (sphere_block == -1) toPlace = Inventory_SelectedBlock;
-
+    struct LocalPlayer* localPlayer = (struct LocalPlayer*)Entities.List[255];
     Vec3 curPos;
     curPos.X = localPlayer->Base.Position.X;
     curPos.Y = localPlayer->Base.Position.Y;
