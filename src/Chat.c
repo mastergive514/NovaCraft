@@ -846,6 +846,8 @@ static void SphereCommand_DoSphere(void) {
     }
 }
 
+
+
 static cc_bool SphereCommand_ParseArgs(const cc_string* args) {
     cc_string value = *args;
     int block;
@@ -884,10 +886,11 @@ static void SphereCommand_Execute(const cc_string* args, int argsCount) {
     sphere_block = -1;
     sphere_persist = false;
 
-    if (argsCount < 2 || argsCount > 3 || !Convert_ParseInt(args[1], &sphere_radius) || sphere_radius < 0) {
+    if (argsCount < 2 || argsCount > 3 || !Convert_ParseInt(&args[1], &sphere_radius) || sphere_radius < 0) {
         Chat_AddOf(&String_Empty, MSG_TYPE_CLIENTSTATUS_1);
         return;
     }
+
 
     if (argsCount == 3 && !SphereCommand_ParseArgs(&args[2])) return;
 
