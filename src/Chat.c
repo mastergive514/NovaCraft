@@ -814,6 +814,117 @@ static struct ChatCommand ClearDeniedCommand = {
 	}
 };
 
+/*########################################################################################################################*
+*---------------------------------------------------------SphereCommand---------------------------------------------------*
+*#########################################################################################################################*/
+static int sphere_block = -1;
+static IVec3 sphere_center;
+static int sphere_radius;
+static cc_bool sphere_persist, sphere_hooked;
+
+static const cc_string sphere_msg = String_FromConst("&eSphere: &fPlace or delete a block.");
+static const cc_string sphere_yes_string = String_FromConst("yes");
+
+static void SphereCommand_DoSphere(void) {
+    int x, y, z;
+    BlockID toPlace = (BlockID)sphere_block;
+
+    if (sphere_block == -1) toPlace = Inventory_SelectedBlock;
+
+    for (y = sphere_center.Y - sphere_radius; y <= sphere_center.Y + sphere_radius; y++) {
+        for (z = sphere_center.Z - sphere_radius; z <= sphere_center.Z + sphere_radius; z++) {
+            for (x = sphere_center.X - sphere_radius; x <= sphere_center.X + sphere_radius; x++) {
+                if ((x - sphere_center.X) * (x - sphere_center.X) +
+                    (y - sphere_center.Y) * (y - sphere_center.Y) +
+                    (z - sphere_center.Z) * (z - sphere_center.Z) <= sphere_radius * sphere_radius) {
+                    Game_ChangeBlock(x, y, z, toPlace);
+                }
+            }
+        }
+    }
+}
+
+static void SphereCommand_BlockChanged(void* obj, IVec3 coords, BlockID old, BlockID now) {
+    cc_string msg; char msgBuffer[STRING_SIZE];
+    String_InitArray(msg, msgBuffer);
+
+    SphereCommand_DoSphere();
+
+    if (!sphere_persist) {
+        Event_Unregister_(&UserEvents.BlockChanged, NULL, SphereCommand_BlockChanged);
+        sphere_hooked = false;
+        Chat_AddOf(&String_Empty, MSG_TYPE_CLIENTSTATUS_1);
+    } else {
+        Chat_AddOf(&sphere_msg, MSG_TYPE_CLIENTSTATUS_1);
+    }
+}
+
+static cc_bool SphereCommand_ParseArgs(const cc_string* args) {
+    cc_string value = *args;
+    int block;
+
+    /* Check for /sphere [block] yes */
+    if (String_CaselessEnds(&value, &sphere_yes_string)) {
+        sphere_persist = true;
+        value.length  -= 3;
+        String_UNSAFE_TrimEnd(&value);
+
+        /* special case "/sphere yes" */
+        if (!value.length) return true;
+    }
+
+    block = Block_Parse(&value);
+    if (block == -1) {
+        Chat_Add1("&eSphere: &c\"%s\" is not a valid block name or id.", &value);
+        return false;
+    }
+
+    if (block > Game_Version.MaxBlock && !Block_IsCustomDefined(block)) {
+        Chat_Add1("&eSphere: &cThere is no block with id \"%s\".", &value);
+        return false;
+    }
+
+    sphere_block = block;
+    return true;
+}
+
+static void SphereCommand_Execute(const cc_string* args, int argsCount) {
+    if (sphere_hooked) {
+        Event_Unregister_(&UserEvents.BlockChanged, NULL, SphereCommand_BlockChanged);
+        sphere_hooked = false;
+    }
+
+    sphere_block = -1;
+    sphere_persist = false;
+    if (argsCount < 4 || argsCount > 5 || !String_ParseIVec3(args, &sphere_center)) {
+        Chat_AddOf(&String_Empty, MSG_TYPE_CLIENTSTATUS_1);
+        return;
+    }
+
+    if (!Convert_ParseInt(args[3], &sphere_radius) || sphere_radius < 0) {
+        Chat_Add1("&eSphere: &cInvalid radius \"%s\".", &args[3]);
+        return;
+    }
+
+    if (argsCount == 5 && !SphereCommand_ParseArgs(&args[4])) return;
+
+    Chat_AddOf(&sphere_msg, MSG_TYPE_CLIENTSTATUS_1);
+    Event_Register_(&UserEvents.BlockChanged, NULL, SphereCommand_BlockChanged);
+    sphere_hooked = true;
+}
+
+static struct ChatCommand SphereCommand = {
+    "Sphere", SphereCommand_Execute,
+    COMMAND_FLAG_SINGLEPLAYER_ONLY | COMMAND_FLAG_UNSPLIT_ARGS,
+    {
+        "&a/client sphere [centerX] [centerY] [centerZ] [radius] [block] [persist]",
+        "&eFills the sphere with [block] centered at the specified coordinates.",
+        "&eIf no block is given, uses your currently held block.",
+        "&e  If persist is given and is \"yes\", then the command",
+        "&e  will repeatedly fill spheres, without needing to be typed in again.",
+    }
+};
+
 
 /*########################################################################################################################*
 *-------------------------------------------------------CuboidCommand-----------------------------------------------------*
@@ -1140,6 +1251,7 @@ static void OnInit(void) {
         Commands_Register(&ClearCommand);
         Commands_Register(&HomeCommand);
 	Commands_Register(&WeatherCommand);
+	Commands_Register(&SphereCommand);
 	
 
 
