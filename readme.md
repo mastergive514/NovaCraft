@@ -1,5 +1,7 @@
-[![Download Last Release](https://img.shields.io/badge/Download-Last%20Release-brightgreen?style=for-the-badge&logo=github)](https://github.com/mastergive514/NovaCraft/releases/latest)
+# Warning!!!
+NovaCraft is not client anymore! Check out [this](https://github.com/mastergive514/NovaCraft2)
 
+# NovaCraft
 NovaCraft is a custom Minecraft Classic and NovaCraft client written in C that works on Windows, macOS, Linux, Android, iOS, FreeBSD, NetBSD, OpenBSD, Solaris, Haiku, and in a web browser.
 
 **It is not affiliated with (or supported by) Mojang AB, Minecraft, or Microsoft in any way.**
