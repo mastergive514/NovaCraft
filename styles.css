@@ -1,146 +1,91 @@
-/* Add these animations */
-@keyframes animateLeft {
-  0% {
-    opacity: 0;
-    transform: translateX(-20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateX(0);
-  }
-}
+/* style.css */
 
-
-
-/* Resetting default margin and padding */
-body, h1, h2, p {
-  margin: 0;
-  padding: 0;
-}
-
-/* Basic styles */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #f3f3f3;
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #f0f0f0;
+	text-align: center;
 }
 
-.navbar {
-  background-color: #333;
-  color: white;
-  text-align: center;
+h1 {
+    color: #333333;
+    text-align: center;
+    margin-top: 20px;
 }
 
-.navbar ul {
-  padding: 0;
-  list-style-type: none;
-  margin: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
+p {
+    color: #666666;
+    line-height: 1.6;
+    margin: 20px;
 }
 
-.navbar ul li {
-  display: inline-block;
+a {
+    color: #0066cc;
+    text-decoration: none;
 }
+
+a:hover {
+    text-decoration: underline;
+}
+
+ul {
+    list-style-type: square;
+    padding: 20px;
+}
+
+li {
+    margin: 5px 0;
+}
+
+img {
+    display: block;
+    max-width: 100%;
+    height: auto;
+    margin: 20px auto;
+}
+
+button {
+    margin: 20px;
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #0066cc;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+button:hover {
+    background-color: #0055aa;
+	text-align: center;
+}
+
+#target-section {
+    padding: 50px;
+    background-color: #ffffff;
+    border-top: 1px solid #cccccc;
+	text-align: center;
+}
+
+
 
 .logo-container {
-  display: flex;
-  align-items: center;
+    display: inline-block;
+    vertical-align: middle; /* Aligns elements vertically */
 }
 
 .logo {
-  width: 40px;
-  height: 40px;
-  margin-right: 10px;
-}
-
-.logo-text {
-  font-size: 24px;
-  color: white;
-  text-decoration: none;
-}
-
-.section {
-  text-align: center;
-  padding: 50px 0;
+    width: 100px; /* Adjust as needed */
+    height: auto;
 }
 
 h1 {
-  font-size: 48px;
-  margin-bottom: 20px;
-}
-
-h2 {
-  font-size: 36px;
-  margin-bottom: 15px;
+    display: inline-block;
+    margin-left: 10px; /* Adjust spacing between the logo and text */
 }
 
 p {
-  font-size: 18px;
-  color: #555;
-  line-height: 1.6;
-}
-
-.download-btn {
-  display: inline-block;
-  padding: 10px 20px;
-  background-color: #007bff;
-  color: white;
-  border-radius: 5px;
-  text-decoration: none;
-  transition: background-color 0.3s ease;
-}
-
-.download-btn:hover {
-  background-color: #0056b3;
-}
-
-.github-link {
-  display: inline-block;
-  padding: 10px 20px;
-  border: 1px solid #007bff;
-  border-radius: 5px;
-  color: #007bff;
-  text-decoration: none;
-  transition: color 0.3s ease, border-color 0.3s ease;
-}
-
-.github-link:hover {
-  color: #0056b3;
-  border-color: #0056b3;
-}
-
-/* Apply animations to elements */
-.animate-left {
-  animation: animateLeft 0.8s ease-out forwards;
-}
-
-/* Adjustments for the sections */
-.home-section {
-  background-color: #f0f0f0;
-  text-align: center;
-  padding: 100px 0;
-}
-
-.download-section {
-  background-color: #e8e8e8;
-  text-align: center;
-  padding: 80px 0;
-  color: #333;
-}
-
-/* Fine-tuning the font sizes and line heights */
-h1 {
-  font-size: 56px;
-  margin-bottom: 20px;
-}
-
-h2 {
-  font-size: 42px;
-  margin-bottom: 15px;
-}
-
-p {
-  font-size: 20px;
-  line-height: 1.6;
+    display: block;
+    margin-top: 20px; /* Add space between the logo/text and the paragraph */
 }
