@@ -16,7 +16,7 @@ The example above consists of three screens:
 `Init` - Where you initialise stuff that lasts for the entire duration the screen is open, e.g. hooking into events.
 
 `Free` - Where you undo the allocating/event hooking you did in Init.
-
+ 
 `ContextRecreated` - Where you actually allocate stuff like textures of widgets and the screen's dynamic vertex buffer. It's where you should call stuff like ButtonWidget_SetConst, TextWidget_SetConst, etc.
 
 `ContextLost` - Where you destroy what you allocated in `ContextRecreated`. You **MUST** destroy all the textures/vertex buffers that you allocated, as otherwise you will get an error later with 'recreating context failed' with the Direct3D9 backend when you next try to resize the window or go fullscreen.
